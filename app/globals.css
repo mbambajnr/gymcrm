@@ -2,38 +2,110 @@
 
 @theme {
   --color-primary: #0070f3;
-  --color-secondary: #7928ca;
-  --color-accent: #ff0080;
+  --color-secondary: #000000;
+  --color-accent: #ffffff;
+
+  --color-background-main: #010101;
+  --color-card-bg: #090909;
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-text-muted: #888888;
 }
 
 :root {
-  --background: #000000;
+  --background: #010101;
   --foreground: #ffffff;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Base styles for better readability */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  @apply tracking-tight font-bold;
+.cauras-card {
+  background: #090909;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-section {
-  @apply relative w-full;
+.cauras-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: #0c0c0c;
+}
+
+.cauras-input {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.cauras-input:focus {
+  border-color: #0070f3;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 1px #0070f3;
+}
+
+.cauras-button-primary {
+  background: #ffffff;
+  color: #000000;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 10px 20px;
+  transition: all 0.2s ease;
+}
+
+.cauras-button-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.glass-nav {
+  background: rgba(1, 1, 1, 0.7);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2.5s infinite linear;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.rotate-x-1 {
+  transform: rotateX(2deg);
 }

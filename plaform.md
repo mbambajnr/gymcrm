@@ -1,140 +1,369 @@
-**PRD FOR GYM CRM**
+---
 
-**Product Requirements Document (PRD)**
+# 📘 Product Requirements Document (PRD)
 
-**Gym CRM & Subscription Management System**
+## Product Name: GymFlow CRM (Working Title)
 
-**1. Product Overview**
+---
 
-The **Gym CRM** is a web-based application designed to help gym administrators manage member registrations, subscription plans, payments, and automated communications. The system will track each client’s registration date, calculate subscription expiry dates based on selected plans, automate payment reminders with payment links, and provide real-time dashboards for operational visibility.
+# 1. 🧭 Product Overview
 
-**2. Goals & Objectives**
+## 1.1 Purpose
 
-- Centralize management of all registered gym members.
-- Automatically calculate and track subscription expiry dates.
-- Reduce overdue payments through automated reminders with embedded payment links.
-- Automate welcome messages and broadcast announcements.
-- Provide clear admin dashboard insights (total members & outstanding payments).
+GymFlow CRM is a web-based Customer Relationship Management (CRM) system designed to help gym owners and managers:
 
-Success Metrics:
+- Manage member registrations
+- Track subscription cycles
+- Automate payment reminders
+- Integrate seamless payments (Paystack)
+- Monitor revenue and performance metrics
+- Send announcements and personalized messages
 
-- 90%+ on-time renewal rate
-- 50% reduction in manual follow-ups
-- Real-time visibility of active vs overdue members
+The system ensures automated billing cycles and real-time visibility into gym operations.
 
-**3. Target Users**
+---
 
-- **Admin/Manager** – Manages members, plans, payments, and announcements.
-- **Gym Staff** – Registers clients and monitors payment status.
-- **Members** – Receive reminders, make payments, receive announcements.
+# 2. 🎯 Objectives
 
-**4. Core Features & Functional Requirements**
+1. Digitize and automate member subscription tracking.
+2. Reduce missed payments through automated reminders.
+3. Increase payment speed using Paystack payment links.
+4. Provide gym owners with financial and operational analytics.
+5. Enable structured role-based access (Owner → Manager).
 
-**4.1 Member Registration & Management**
+---
 
-- Register new members with: Name, Phone, Email, Registration Date, Selected Plan.
-- Automatically assign subscription expiry date based on plan duration.
-- Member status categories:
+# 3. 👥 User Roles & Permissions
+
+## 3.1 Admin (Gym Owner)
+
+- Create & manage Managers
+- View total revenue (monthly + historical)
+- View:
+    - Active clients
+    - Suspended clients
+- View revenue comparison bar chart
+- Access detailed analytics page
+- Assign Manager roles
+- Send announcements
+
+## 3.2 Manager
+
+- Register new members
+- View active members
+- Track subscriptions nearing expiry
+- Send reminders
+- View current month revenue
+- View detailed revenue history (click-through)
+- Send welcome messages
+- Send schedule updates
+
+## 3.3 Gym Member (System Role)
+
+- Receive:
+    - Welcome messages
+    - Subscription reminders
+    - Payment links
+    - Announcements
+- Complete payments via Paystack
+
+---
+
+# 4. 🧩 Core Features & Functional Requirements
+
+---
+
+## 4.1 Member Management Module
+
+### Functional Requirements:
+
+- Add new member:
+    - Full Name
+    - Email
+    - Phone Number
+    - Registration Date (auto timestamp)
+    - Subscription Plan
+    - Payment Status
+- Automatically calculate:
+    - Subscription expiry date
+- Member statuses:
     - Active
-    - Due
-    - Expired
-- Maintain searchable database of all registered users.
+    - Due Soon
+    - Suspended (Expired / Unpaid)
 
-**4.2 Subscription Plans**
+### System Logic:
 
-- Pre-configured plans:
-    - Monthly
-    - Quarterly
-    - Annual
-- Admin can configure:
-    - Price per plan
-    - Discount percentage per plan
-- System calculates final payable amount after discount.
+- On registration:
+    - Store registration date
+    - Assign plan duration
+    - Calculate expiry date
+- If payment expires:
+    - Move user to “Due List”
+    - Mark as Suspended if overdue
 
-**4.3 Subscription Tracking & Expiry Logic**
+---
 
-- Expiry date = Registration Date + Plan Duration.
-- System auto-moves member to “Due” list X days before expiry (configurable, e.g., 5 days).
-- If unpaid past expiry date → status changes to “Expired”.
-- Upon successful payment:
-    - Member removed from “Due” list
-    - New expiry date generated
-    - Subscription cycle resets
+## 4.2 Subscription Plans
 
-**4.4 Payment Integration**
+### Available Plans:
 
-- Generate secure payment links (Paystack).
-- Include payment link in reminder notifications.
-- On successful payment confirmation:
-    - Update status to Active
-    - Record transaction
-    - Generate receipt
-    - Reset subscription cycle
+- Monthly
+- Quarterly
+- Annual
 
-**4.5 Automated Notifications**
+### Additional Requirements:
 
-**A. Welcome Message**
+- Configurable pricing
+- Discount percentage field (e.g., 10% for annual plan)
+- Admin can modify plan prices
 
-- Automatically sent upon new member registration.
-- Personalized (Name, Plan, Expiry Date).
+---
 
-**B. Renewal Reminder**
+## 4.3 Payment Integration (Paystack)
 
-- Sent before subscription expiry (configurable).
-- Includes:
-    - Member Name
-    - Plan Type
+### Requirements:
+
+- Generate unique Paystack payment link per member
+- Include:
+    - Member ID
+    - Plan type
+    - Amount
+- On successful payment:
+    - Receive Paystack webhook
+    - Automatically:
+        - Remove user from Due List
+        - Update status to Active
+        - Reset subscription cycle
+        - Log revenue
+        - Update expiry date
+
+### Payment Flow:
+
+1. System detects subscription nearing expiry.
+2. Reminder email/SMS sent with Paystack link.
+3. Member pays.
+4. Webhook confirms success.
+5. System updates member record.
+
+---
+
+## 4.4 Automated Reminders
+
+### Reminder Triggers:
+
+- 7 days before expiry
+- 3 days before expiry
+- 1 day before expiry
+- On expiry date
+
+### Channels:
+
+- Email (required)
+- SMS (optional enhancement)
+
+### Content:
+
+- Personalized greeting
+- Subscription expiry date
+- Payment link
+- Gym contact info
+
+---
+
+## 4.5 Messaging System
+
+### Automated Messages:
+
+- Welcome message upon registration
+- Subscription reminders
+- Payment confirmation message
+
+### Manual Broadcast:
+
+- Schedule changes
+- Announcements
+- Promotions
+
+---
+
+# 5. 📊 Dashboard Requirements
+
+---
+
+## 5.1 Manager Dashboard
+
+### Display Sections:
+
+1. **Active Clients Count**
+2. **Clients Nearing Expiry List**
+    - Name
     - Expiry Date
-    - Payment Link
+    - Plan Type
+    - Status
+3. **Total Revenue (Current Month)**
+    - Clickable → Revenue History Page
 
-**C. Overdue Reminder**
+### Revenue History Page:
 
-- Sent daily/weekly after expiry until payment.
+- Table view:
+    - Month
+    - Total Revenue
+- Filter by date
+- Export (CSV optional enhancement)
 
-**D. Broadcast Announcements**
+---
 
-- Admin can send mass announcements (e.g., holiday hours, new classes).
-- Delivered via Email and/or SMS.
+## 5.2 Admin (Owner) Dashboard
 
-**5. Admin Dashboard Requirements**
+### Must Display:
 
-Dashboard Widgets:
+1. Total Revenue (Current Month)
+2. Active Clients
+3. Suspended Clients
+4. Revenue Bar Chart (Past 6–12 Months)
 
-1. **Total Registered Users Widget**
-    - Displays total number of members.
-    - Optional breakdown: Active, Due, Expired.
-2. **Outstanding Clients Widget**
-    - Displays number of members with unpaid subscriptions.
-    - Clickable to view detailed list.
+### Chart Interaction:
 
-Additional Dashboard Elements:
+- Clicking chart → Detailed Analytics Page
 
-- Recent Registrations
-- Recent Payments
-- Revenue Summary (Optional Phase 2)
+### Detailed Analytics Page:
 
-**6. Non-Functional Requirements**
+- Revenue breakdown by:
+    - Plan type
+    - Payment method
+- Growth percentage month-over-month
 
-- Cloud-based, secure authentication.
-- Role-based access control (Admin vs Staff).
-- Secure payment processing (PCI-compliant provider).
-- Mobile-responsive UI.
-- Data backup & audit logs.
+---
 
-**7. Assumptions & Constraints**
+# 6. 👨‍💼 Manager Assignment Flow
 
-- Internet-based application.
-- Payment provider API integration required.
-- SMS/email provider integration required.
+### Admin Actions:
 
-**8. Future Enhancements (Phase 2)**
+- Fill Manager Details:
+    - Full Name
+    - Email
+    - Phone
+- Assign Role: Manager
 
-- Mobile app version.
-- Attendance tracking with QR check-in.
-- Loyalty rewards program.
-- Class scheduling & booking.
-- Revenue analytics dashboard.
+### After Creation:
 
-**Summary**
+- System:
+    - Generates temporary password
+    - Sends email with:
+        - Login URL
+        - Username
+        - Temporary password
+        - Password reset link
 
-This Gym CRM system will automate subscription tracking, payment reminders, and communication workflows, ensuring improved revenue collection, reduced manual work, and better member engagement.
+---
+
+# 7. 📈 Revenue Tracking Logic
+
+Revenue should:
+
+- Log each successful Paystack payment
+- Categorize by:
+    - Plan type
+    - Date
+- Automatically aggregate:
+    - Current month revenue
+    - Historical revenue
+
+---
+
+# 8. 🗂 Data Model Overview
+
+## Entities:
+
+### Member
+
+- id
+- full_name
+- email
+- phone
+- registration_date
+- subscription_plan
+- expiry_date
+- status
+
+### Payment
+
+- id
+- member_id
+- amount
+- plan_type
+- payment_date
+- payment_reference
+- status
+
+### SubscriptionPlan
+
+- id
+- name (Monthly, Quarterly, Annual)
+- duration_days
+- price
+- discount_percentage
+
+### User (Admin/Manager)
+
+- id
+- name
+- email
+- role
+- password_hash
+
+---
+
+# 9. 🔐 Non-Functional Requirements
+
+- Secure authentication (JWT/session-based)
+- Role-based access control
+- HTTPS required
+- Paystack webhook verification
+- Scalable database design
+- Backup and logging enabled
+
+---
+
+# 10. 🧪 Edge Cases
+
+- Payment succeeds but webhook fails → retry mechanism
+- Member pays twice → prevent duplicate extension
+- Manager deleted → reassign members
+- Subscription changed mid-cycle → prorated handling (future enhancement)
+
+---
+
+# 11. 🛠 Recommended Tech Stack (Suggested)
+
+Since you're building systems and working toward scalable tech ventures:
+
+- Backend: Django / FastAPI / Node.js
+- Frontend: React / Next.js
+- Database: PostgreSQL
+- Payment: Paystack
+- Email: SendGrid / Mailgun
+- Hosting: AWS / DigitalOcean
+
+---
+
+# 12. 🚀 Future Enhancements
+
+- SMS integration
+- WhatsApp reminders
+- Attendance tracking
+- Trainer assignment module
+- Mobile app version
+- Multi-branch support
+- AI churn prediction
+
+---
+
+# 13. 🏁 Success Metrics
+
+- Reduction in expired unpaid subscriptions
+- Increase in on-time payments
+- Revenue growth month-over-month
+- Reduced manual tracking time
+
+---
