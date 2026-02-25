@@ -62,34 +62,40 @@ export async function createManager(formData: {
             else if (owner.user_metadata?.gym_name) gymName = owner.user_metadata.gym_name
         }
 
-        // 4. Primary Task: Create Auth User
-        // We include common metadata keys (name, full_name, gym_name) to satisfy common DB triggers
+        // 4. Phase 1: Barebones Auth Creation
+        // We omit name/phone here because common triggers try to insert them into profiles, 
+        // which crashes if the columns don't exist in the profiles table.
         const { data: authData, error: authError } = await adminSupabase.auth.admin.createUser({
             email: formData.email,
             password: tempPassword,
             email_confirm: true,
             user_metadata: {
-                full_name: formData.fullName,
-                name: formData.fullName,
-                phone: formData.phone,
                 role: 'manager',
-                gym_name: gymName,
-                has_finished_setup: true
+                gym_name: gymName
             }
         })
 
         if (authError) {
-            console.error('Auth Creation Error:', authError.message)
+            console.error('Auth Creation Phase 1 Error:', authError.message)
             return {
                 success: false,
-                message: `Authorization failed: ${authError.message}. This is likely a database trigger conflict.`
+                message: `Authorization failed: ${authError.message}. This is almost certainly a database trigger crash in Supabase. Your 'handle_new_user' trigger is likely trying to insert into non-existent columns (e.g., full_name, name, or phone) in the 'profiles' table.`
             }
         }
 
         const userId = authData?.user?.id
         if (userId) {
-            // 5. Explicit Profile Sync
-            // We upsert here to fix the profile even if a trigger partially failed or didn't exist
+            // 5. Phase 2: Enrich Metadata
+            // Updates usually don't run the INSERT trigger, so we can safely add name/phone here.
+            await adminSupabase.auth.admin.updateUserById(userId, {
+                user_metadata: {
+                    full_name: formData.fullName,
+                    phone: formData.phone,
+                    has_finished_setup: true
+                }
+            })
+
+            // 6. Manual Profile Sync
             await adminSupabase
                 .from('profiles')
                 .upsert({
@@ -99,20 +105,15 @@ export async function createManager(formData: {
                     gym_name: gymName
                 })
 
-            // 6. Notify the new manager
-            try {
-                await sendManagerInvite(formData.email, tempPassword)
-            } catch (emailErr) {
-                console.error('Email Notification Failed:', emailErr)
-                // We don't fail the whole action for an email error
-            }
+            // 7. Notification (Fire and forget)
+            sendManagerInvite(formData.email, tempPassword).catch(e => console.error('Invite Error:', e))
         }
 
         revalidatePath('/admin-dashboard')
         return {
             success: true,
             tempPassword: tempPassword,
-            message: 'Manager Authorized Successfully'
+            message: 'Administrative Node Authorized Successfully'
         }
     } catch (error: unknown) {
         console.error('Fatal Manager Creation Error:', error)
