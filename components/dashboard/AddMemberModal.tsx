@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { X, User, Mail, Phone, CreditCard, ChevronRight, CheckCircle2 } from 'lucide-react'
-import { registerMember } from '@/app/dashboard/actions'
+import { registerMember } from '@/app/manager-dashboard/actions'
 
 interface Plan {
     id: string
@@ -29,6 +29,12 @@ export default function AddMemberModal({ isOpen, onClose, plans }: AddMemberModa
 
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null)
     const [finalPrice, setFinalPrice] = useState(0)
+    const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+
+    const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
+        setNotification({ message, type })
+        setTimeout(() => setNotification(null), 5000)
+    }
 
     useEffect(() => {
         const plan = plans.find(p => p.id === formData.planId)
@@ -43,12 +49,24 @@ export default function AddMemberModal({ isOpen, onClose, plans }: AddMemberModa
         e.preventDefault()
         setIsSubmitting(true)
         try {
-            await registerMember(formData)
-            onClose()
-            setFormData({ fullName: '', email: '', phone: '', planId: '' })
+            const result = await registerMember(formData)
+
+            if (result.success && result.authorization_url) {
+                showNotification('Member registered. Redirecting to payment portal...')
+                // Wait briefly for the user to see the notification
+                setTimeout(() => {
+                    window.location.href = result.authorization_url
+                }, 1500)
+            } else {
+                showNotification('Member registered successfully. Welcome protocols initiated.')
+                setTimeout(() => {
+                    onClose()
+                    setFormData({ fullName: '', email: '', phone: '', planId: '' })
+                }, 2000)
+            }
         } catch (error: any) {
             console.error('Registration failed:', error)
-            alert(error.message || 'Failed to register member. Please try again.')
+            showNotification(error.message || 'Registration failed. Check system logs.', 'error')
         } finally {
             setIsSubmitting(false)
         }
@@ -65,9 +83,9 @@ export default function AddMemberModal({ isOpen, onClose, plans }: AddMemberModa
                     <div className="lg:col-span-2 p-12 bg-white/[0.02] border-r border-white/5 hidden lg:flex flex-col justify-between">
                         <div>
                             <div className="h-10 w-10 bg-white rounded-xl flex items-center justify-center mb-10 shadow-xl shadow-white/10" />
-                            <h2 className="text-3xl font-bold tracking-tight mb-4">Onboard new <br /> member</h2>
+                            <h2 className="text-3xl font-bold tracking-tight mb-4">Register new <br /> member</h2>
                             <p className="text-[14px] text-zinc-500 font-medium leading-relaxed">
-                                Register a new student to the platform. They will receive an automated welcome email with their digital access code.
+                                Create a new member account. They will receive an automated welcome email with their digital access keys.
                             </p>
                         </div>
 
@@ -82,7 +100,7 @@ export default function AddMemberModal({ isOpen, onClose, plans }: AddMemberModa
                             </div>
                             <div className="flex gap-4">
                                 <CheckCircle2 className="h-5 w-5 text-zinc-700" />
-                                <p className="text-[13px] text-zinc-500 font-medium">Digital member ID generation</p>
+                                <p className="text-[13px] text-zinc-500 font-medium">Digital ID generation</p>
                             </div>
                         </div>
                     </div>
@@ -138,7 +156,7 @@ export default function AddMemberModal({ isOpen, onClose, plans }: AddMemberModa
                                 </div>
 
                                 <div>
-                                    <label className="text-[11px] font-bold text-zinc-600 uppercase tracking-widest mb-3 block">Select Membership</label>
+                                    <label className="text-[11px] font-bold text-zinc-600 uppercase tracking-widest mb-3 block">Select Member Plan</label>
                                     <div className="grid grid-cols-1 gap-3">
                                         {plans.map((plan) => (
                                             <label
@@ -192,6 +210,23 @@ export default function AddMemberModal({ isOpen, onClose, plans }: AddMemberModa
                     </div>
                 </div>
             </div>
+
+            {/* Notification Toast */}
+            {notification && (
+                <div className="fixed top-10 left-1/2 -translate-x-1/2 z-[300] animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className={`px-6 py-4 rounded-2xl border flex items-center gap-4 shadow-2xl backdrop-blur-xl ${notification.type === 'success'
+                        ? 'bg-green-500/10 border-green-500/20 text-green-400'
+                        : 'bg-red-500/10 border-red-500/20 text-red-400'
+                        }`}>
+                        {notification.type === 'success' ? (
+                            <CheckCircle2 className="h-5 w-5" />
+                        ) : (
+                            <X className="h-5 w-5" />
+                        )}
+                        <span className="text-sm font-bold tracking-tight">{notification.message}</span>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

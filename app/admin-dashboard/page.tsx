@@ -18,17 +18,18 @@ export default async function AdminDashboardPage() {
     const adminSupabase = await createAdminClient()
     const { data: profile } = await adminSupabase
         .from('profiles')
-        .select('role, gym_name')
+        .select('role, gym_name, paystack_secret_key, paystack_public_key')
         .eq('id', user.id)
         .single()
 
     if (profile?.role !== 'admin' && user.email !== 'balikakingadam@gmail.com') {
-        return redirect('/dashboard')
+        return redirect('/manager-dashboard')
     }
 
-    const [managers, initialMetrics] = await Promise.all([
+    const [managers, initialMetrics, initialPlans] = await Promise.all([
         getManagers(),
-        getPlatformMetrics('12months')
+        getPlatformMetrics('12months'),
+        adminSupabase.from('plans').select('name, price').in('name', ['Monthly Plan', 'Quarterly Plan', 'Annual Plan'])
     ])
 
     return (
@@ -40,6 +41,15 @@ export default async function AdminDashboardPage() {
             }))}
             gymName={profile?.gym_name}
             initialMetrics={initialMetrics}
+            paystackKeys={{
+                secretKey: profile?.paystack_secret_key || '',
+                publicKey: profile?.paystack_public_key || ''
+            }}
+            initialPlans={initialPlans.data || []}
+            broadcastSettings={{
+                senderName: user?.user_metadata?.broadcast_name || user?.user_metadata?.full_name || '',
+                senderEmail: user?.user_metadata?.broadcast_email || user?.email || ''
+            }}
         />
     )
 }

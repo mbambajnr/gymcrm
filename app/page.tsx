@@ -28,7 +28,7 @@ export default async function Home() {
     const hasFinishedSetup = !!profile?.gym_name;
 
     if (isManager) {
-      return redirect('/dashboard');
+      return redirect('/manager-dashboard');
     }
 
     if (!hasFinishedSetup) {
@@ -43,7 +43,7 @@ export default async function Home() {
 
       {/* Precision Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-[100] h-[80px] flex items-center bg-[#010101]/80 backdrop-blur-xl border-b border-white/[0.05]">
-        <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-10">
+        <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-6 md:px-10">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-white shadow-[0_0_40px_rgba(255,255,255,0.15)] transition-transform hover:scale-105">
               <Image
@@ -64,9 +64,9 @@ export default async function Home() {
             ))}
           </div>
 
-          <div className="flex items-center gap-6">
-            <a href="/login" className="text-[13px] font-bold text-zinc-500 hover:text-white transition-colors">SIGN IN</a>
-            <a href="/signup" className="bg-white text-black px-7 py-2.5 rounded-full text-[13px] font-bold hover:bg-zinc-200 transition-all active:scale-95 shadow-2xl shadow-white/10 group flex items-center gap-2">
+          <div className="flex items-center gap-4 md:gap-6">
+            <a href="/login" className="hidden sm:block text-[13px] font-bold text-zinc-500 hover:text-white transition-colors">SIGN IN</a>
+            <a href="/signup" className="bg-white text-black px-5 md:px-7 py-2.5 rounded-full text-[12px] md:text-[13px] font-bold hover:bg-zinc-200 transition-all active:scale-95 shadow-2xl shadow-white/10 group flex items-center gap-2">
               GET STARTED
               <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
             </a>
@@ -77,7 +77,7 @@ export default async function Home() {
       <main className="flex flex-col items-center">
 
         {/* Cinematic Hero Section */}
-        <section className="relative w-full min-h-screen flex flex-col items-center justify-center pt-[80px] pb-20 px-10 text-center">
+        <section className="relative w-full min-h-screen flex flex-col items-center justify-center pt-[80px] pb-20 px-6 md:px-10 text-center">
           {/* Dynamic Background Elements */}
           <div className="absolute inset-0 -z-10 overflow-hidden bg-[#010101]">
             <div className="absolute inset-0 bg-gradient-to-b from-[#010101]/60 via-[#010101]/90 to-[#010101] z-10" />
@@ -103,12 +103,12 @@ export default async function Home() {
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-[80px] font-medium tracking-tight leading-[1] mb-8">
+          <h1 className="text-4xl sm:text-6xl lg:text-[80px] font-medium tracking-[0.05em] leading-[1] mb-8 text-gradient">
             MANAGEMENT <br />
             <span className="text-white">SIMPLIFIED.</span>
           </h1>
 
-          <p className="text-base sm:text-lg text-zinc-400 max-w-xl mx-auto font-medium leading-relaxed mb-12">
+          <p className="text-base sm:text-lg text-zinc-400 max-w-xl mx-auto font-medium leading-relaxed mb-12 px-2">
             Orchestrate your gym&apos;s growth with our ultra-precise membership engine and automated local payment protocols.
           </p>
 
@@ -229,12 +229,28 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* Logic Trust Bar */}
+        <section className="w-full border-y border-white/[0.05] bg-white/[0.01] overflow-hidden py-10">
+          <div className="flex flex-col items-center gap-6">
+            <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.4em]">Integrated with elite infrastructure</span>
+            <div className="flex gap-20 animate-marquee items-center opacity-30 grayscale hover:opacity-100 transition-opacity duration-1000">
+              {['VANTAGE GYM', 'ELITE ATHLETICS', 'POWER NODE', 'TITAN INFRA', 'VERTEX FITNESS', 'CORE SYSTEMS'].map((name) => (
+                <span key={name} className="text-xl font-black tracking-tighter text-white whitespace-nowrap">{name}</span>
+              ))}
+              {/* Duplicate for seamless infinite scroll */}
+              {['VANTAGE GYM', 'ELITE ATHLETICS', 'POWER NODE', 'TITAN INFRA', 'VERTEX FITNESS', 'CORE SYSTEMS'].map((name) => (
+                <span key={name + '_2'} className="text-xl font-black tracking-tighter text-white whitespace-nowrap">{name}</span>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* The Bento Grid Feature Section */}
-        <section id="architecture" className="w-full max-w-[1400px] px-10 py-40">
+        <section id="architecture" className="w-full max-w-[1400px] px-6 md:px-10 py-40">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
             {/* Large Featured Card */}
-            <div className="md:col-span-2 cauras-card p-12 flex flex-col justify-between overflow-hidden group min-h-[500px]">
+            <div className="md:col-span-2 cauras-card p-8 md:p-12 flex flex-col justify-between overflow-hidden group min-h-[400px] md:min-h-[500px]">
               <div className="relative z-10">
                 <div className="h-14 w-14 bg-white/[0.03] border border-white/[0.08] rounded-2xl flex items-center justify-center mb-8 text-white group-hover:bg-white group-hover:text-black transition-all">
                   <Zap className="h-7 w-7" />
@@ -291,7 +307,7 @@ export default async function Home() {
             </div>
 
             {/* Medium Card */}
-            <div className="md:col-span-2 cauras-card p-12 bg-[#050505] overflow-hidden group">
+            <div className="md:col-span-2 cauras-card p-8 md:p-12 bg-[#050505] overflow-hidden group">
               <div className="flex flex-col md:flex-row gap-12 items-center">
                 <div className="flex-1 space-y-6">
                   <h3 className="text-3xl font-bold tracking-tight">Intelligence for <br /> Decision Makers</h3>
@@ -320,7 +336,7 @@ export default async function Home() {
         <ClientGallery />
 
         {/* The Impact Quote Section */}
-        <section className="w-full max-w-5xl px-10 py-60 text-center">
+        <section className="w-full max-w-5xl px-6 md:px-10 py-40 md:py-60 text-center">
           <p className="text-[11px] font-bold text-primary uppercase tracking-[0.4em] mb-12">Performance Standard</p>
           <h2 className="text-4xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-20 italic">
             &quot;GymFlow didn&apos;t just automate my business; it redefined the way my athletes interact with our technology.&quot;
@@ -333,11 +349,11 @@ export default async function Home() {
         </section>
 
         {/* Global Conversion Card */}
-        <section className="w-full max-w-[1400px] px-10 py-40">
-          <div className="cauras-card relative overflow-hidden bg-gradient-to-b from-white/[0.06] to-transparent p-20 md:p-40 text-center border-white/[0.1]">
+        <section className="w-full max-w-[1400px] px-6 md:px-10 py-40">
+          <div className="cauras-card relative overflow-hidden bg-gradient-to-b from-white/[0.06] to-transparent p-10 md:p-40 text-center border-white/[0.1]">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-full bg-white/[0.03] blur-[120px] rounded-full -z-10" />
 
-            <h2 className="text-6xl md:text-[120px] font-bold tracking-tighter leading-none mb-16">
+            <h2 className="text-5xl md:text-[120px] font-bold tracking-tighter leading-none mb-16">
               SCALE <br /> BEYOND.
             </h2>
 
@@ -359,7 +375,7 @@ export default async function Home() {
       </main>
 
       {/* Corporate Footer */}
-      <footer className="border-t border-white/5 px-10 py-32 bg-[#010101]">
+      <footer className="border-t border-white/5 px-6 md:px-10 py-24 md:py-32 bg-[#010101]">
         <div className="mx-auto flex flex-col md:flex-row max-w-[1400px] justify-between gap-20">
 
           <div className="max-w-sm space-y-10">

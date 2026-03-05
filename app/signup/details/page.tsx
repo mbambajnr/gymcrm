@@ -21,7 +21,7 @@ export default async function DetailsPage() {
 
     if (profile?.gym_name) {
         if (profile.role === 'manager') {
-            return redirect('/dashboard')
+            return redirect('/manager-dashboard')
         }
         return redirect('/admin-dashboard')
     }

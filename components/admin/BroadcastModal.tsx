@@ -3,6 +3,8 @@
 import React, { useState } from 'react'
 import { X, Send, Megaphone, Users, ShieldCheck } from 'lucide-react'
 
+import { sendBroadcast } from '@/app/admin-dashboard/actions'
+
 interface BroadcastModalProps {
     isOpen: boolean
     onClose: () => void
@@ -23,14 +25,13 @@ export default function BroadcastModal({ isOpen, onClose }: BroadcastModalProps)
         setIsSubmitting(true)
 
         try {
-            // SIMULATION: In a real app, this would hit a broadcast action
-            console.log('Broadcasting payload:', formData)
-            await new Promise(resolve => setTimeout(resolve, 1500))
-            alert(`Broadcast transmitted successfully to ${formData.target} nodes.`)
+            const result = await sendBroadcast(formData)
+            alert(`Broadcast transmitted successfully to ${result.count} active accounts.`)
             onClose()
-        } catch (error) {
+            setFormData({ subject: '', message: '', target: 'all' })
+        } catch (error: any) {
             console.error('Broadcast failed:', error)
-            alert('Failed to transmit broadcast. Check telemetry logs.')
+            alert(`Transmission failed: ${error.message || 'System Error'}`)
         } finally {
             setIsSubmitting(false)
         }

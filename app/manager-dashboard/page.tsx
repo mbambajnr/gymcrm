@@ -1,7 +1,7 @@
 import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import DashboardContainer from '@/components/dashboard/DashboardContainer'
-import { getPlans, getDashboardData, getMembers } from './actions'
+import { getPlans, getDashboardData, getMembers, getTransactions } from './actions'
 
 export default async function DashboardPage() {
     const supabase = await createClient()
@@ -26,10 +26,11 @@ export default async function DashboardPage() {
         return redirect('/admin-dashboard')
     }
 
-    const [plans, dashboardData, allMembers] = await Promise.all([
+    const [plans, dashboardData, allMembers, transactions] = await Promise.all([
         getPlans(),
         getDashboardData(),
-        getMembers()
+        getMembers(),
+        getTransactions()
     ])
 
     // Fetch total member count for the stat card
@@ -43,9 +44,12 @@ export default async function DashboardPage() {
             userEmail={user.email}
             plans={plans}
             membersCount={count || 0}
+            activeCount={dashboardData.activeCount}
+            pendingCount={dashboardData.pendingCount}
             recentMembers={dashboardData.recentMembers}
             totalRevenue={dashboardData.totalRevenue}
             allMembers={allMembers}
+            transactions={transactions}
             gymName={profile?.gym_name}
         />
     )

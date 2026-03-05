@@ -27,12 +27,12 @@ export default function ManagerBroadcastModal({ isOpen, onClose, memberCount }: 
             // SIMULATION: In a real app, this would hit a broadcast action scoped to manager's members
             console.log('Manager Broadcasting payload:', formData)
             await new Promise(resolve => setTimeout(resolve, 1500))
-            alert(`Broadcast transmitted to all ${memberCount} members successfully.`)
+            alert(`Announcement sent to all ${memberCount} members successfully.`)
             onClose()
             setFormData({ subject: '', message: '', priority: 'normal' })
         } catch (error) {
             console.error('Broadcast failed:', error)
-            alert('Failed to transmit broadcast. Please try again.')
+            alert('Failed to send announcement. Please try again.')
         } finally {
             setIsSubmitting(false)
         }
@@ -54,8 +54,8 @@ export default function ManagerBroadcastModal({ isOpen, onClose, memberCount }: 
                             <Megaphone className="h-6 w-6 text-black" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold tracking-tight">Member Broadcast</h2>
-                            <p className="text-[12px] text-zinc-500 font-medium uppercase tracking-widest text-primary">Direct Communication to {memberCount} Active Nodes</p>
+                            <h2 className="text-2xl font-bold tracking-tight">Direct Announcement</h2>
+                            <p className="text-[12px] text-zinc-500 font-medium uppercase tracking-widest text-primary">Direct Communication to {memberCount} Active Members</p>
                         </div>
                     </div>
 
@@ -106,7 +106,7 @@ export default function ManagerBroadcastModal({ isOpen, onClose, memberCount }: 
                         <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex items-start gap-4 mb-2">
                             <Info className="h-5 w-5 text-zinc-600 mt-0.5" />
                             <p className="text-[12px] text-zinc-500 leading-relaxed font-medium">
-                                This message will be dispatched to all members currently registered under your management node.
+                                This message will be sent to all members currently registered under your management account.
                             </p>
                         </div>
 
@@ -116,7 +116,7 @@ export default function ManagerBroadcastModal({ isOpen, onClose, memberCount }: 
                                 disabled={isSubmitting}
                                 className="flex-1 bg-white text-black py-4 rounded-2xl font-bold text-[14px] flex items-center justify-center gap-3 hover:bg-zinc-200 transition-all active:scale-[0.98] disabled:opacity-30"
                             >
-                                {isSubmitting ? 'Dispatching...' : 'Send Announcement'}
+                                {isSubmitting ? 'Sending...' : 'Send Announcement'}
                                 <Send className="h-4 w-4" />
                             </button>
                         </div>

@@ -10,21 +10,41 @@ export async function GET(request: Request) {
 
     if (code) {
         const supabase = await createClient()
-        const { error } = await supabase.auth.exchangeCodeForSession(code)
-        if (!error) {
-            const forwardedHost = request.headers.get('x-forwarded-host') // i.e. vercel.com
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+
+        // If there's no error, OR if we already have a user session (code was likely already exchanged)
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!exchangeError || user) {
+            let finalNext = next
+
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('gym_name, role')
+                    .eq('id', user.id)
+                    .single()
+
+                // If they haven't finished setup (no gym name) and they aren't a manager, 
+                // force them to the details page regardless of 'next' parameter
+                if (!profile?.gym_name && profile?.role !== 'manager' && finalNext === '/') {
+                    finalNext = '/signup/details'
+                }
+            }
+
+            const forwardedHost = request.headers.get('x-forwarded-host')
             const isLocalEnv = process.env.NODE_ENV === 'development'
+
             if (isLocalEnv) {
-                // we can be sure that origin is localhost in development
-                return NextResponse.redirect(`${origin}${next}`)
+                return NextResponse.redirect(`${origin}${finalNext}`)
             } else if (forwardedHost) {
-                return NextResponse.redirect(`https://${forwardedHost}${next}`)
+                return NextResponse.redirect(`https://${forwardedHost}${finalNext}`)
             } else {
-                return NextResponse.redirect(`${origin}${next}`)
+                return NextResponse.redirect(`${origin}${finalNext}`)
             }
         }
     }
 
-    // return the user to an error page with instructions
+    // If we're here, it means the code was invalid AND we have no session
     return NextResponse.redirect(`${origin}/auth/auth-code-error`)
 }

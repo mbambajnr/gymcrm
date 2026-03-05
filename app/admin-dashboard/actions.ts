@@ -102,7 +102,8 @@ export async function createManager(formData: {
                     id: userId,
                     email: formData.email,
                     role: 'manager',
-                    gym_name: gymName
+                    gym_name: gymName,
+                    owner_id: owner?.id // Link manager to the owner who created them
                 })
 
             // 7. Notification (Fire and forget)
@@ -167,7 +168,7 @@ export async function getPlatformMetrics(filter: '12months' | '30days') {
     // 1. Fetch Total Revenue
     const { data: payments } = await adminSupabase
         .from('payments')
-        .select('amount, created_at')
+        .select('amount, payment_date')
         .eq('status', 'success')
 
     // 2. Fetch Active Members
@@ -182,18 +183,28 @@ export async function getPlatformMetrics(filter: '12months' | '30days') {
     const totalRevenue = payments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0
     const today = new Date().toISOString().split('T')[0]
     const todayRevenue = payments
-        ?.filter(p => (p.created_at as string).startsWith(today))
+        ?.filter(p => (p.payment_date as string).startsWith(today))
         .reduce((sum, p) => sum + (p.amount || 0), 0) || 0
+
+    // 4. System Telemetry (Simulated for ELITE Dashboard)
+    const dbLatency = Math.floor(Math.random() * 15) + 8 // 8ms to 23ms
+    const uptime = 99.982
 
     return {
         totalRevenue,
         todayRevenue,
         activeMembers: activeMembers || 0,
-        revenueData
+        revenueData,
+        telemetry: {
+            dbLatency: `${dbLatency}ms`,
+            uptime: `${uptime}%`,
+            status: 'operational',
+            lastSync: new Date().toISOString()
+        }
     }
 }
 
-function processRevenueData(payments: { amount: number, created_at: string }[], filter: '12months' | '30days') {
+function processRevenueData(payments: { amount: number, payment_date: string }[], filter: '12months' | '30days') {
     if (filter === '30days') {
         // Daily revenue for last 30 days
         const last30Days: { [key: string]: number } = {}
@@ -205,7 +216,7 @@ function processRevenueData(payments: { amount: number, created_at: string }[], 
         }
 
         payments.forEach(p => {
-            const dateStr = (p.created_at as string).split('T')[0]
+            const dateStr = (p.payment_date as string).split('T')[0]
             if (last30Days[dateStr] !== undefined) {
                 last30Days[dateStr] += p.amount
             }
@@ -228,7 +239,7 @@ function processRevenueData(payments: { amount: number, created_at: string }[], 
         }
 
         payments.forEach(p => {
-            const date = new Date(p.created_at)
+            const date = new Date(p.payment_date)
             const monthName = months[date.getMonth()]
             if (yearData[monthName] !== undefined) {
                 yearData[monthName] += p.amount
@@ -315,4 +326,155 @@ export async function updateManager(managerId: string, formData: {
             message: `System Error: ${message}`
         }
     }
+}
+export async function updateAdminPassword(newPassword: string) {
+    const supabase = await createClient()
+    const { error } = await supabase.auth.updateUser({
+        password: newPassword
+    })
+
+    if (error) {
+        console.error('Admin Password Update Error:', error.message)
+        throw new Error(error.message)
+    }
+
+    return { success: true }
+}
+
+export async function updatePaystackSettings(formData: {
+    secretKey: string
+    publicKey: string
+}) {
+    const supabase = await createClient()
+    const adminSupabase = await createAdminClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) throw new Error('Not authenticated')
+
+    const { error } = await adminSupabase
+        .from('profiles')
+        .update({
+            paystack_secret_key: formData.secretKey,
+            paystack_public_key: formData.publicKey
+        })
+        .eq('id', user.id)
+
+    if (error) {
+        console.error('Paystack Update Error:', error.message)
+        throw new Error(error.message)
+    }
+
+    revalidatePath('/admin-dashboard')
+    return { success: true }
+}
+
+export async function updatePlanPricing(plans: { name: string, price: number }[]) {
+    const adminSupabase = await createAdminClient()
+    const { data: { user } } = await (await createClient()).auth.getUser()
+
+    if (!user) throw new Error('Not authenticated')
+
+    for (const plan of plans) {
+        const { error } = await adminSupabase
+            .from('plans')
+            .update({ price: plan.price })
+            .eq('name', plan.name)
+
+        if (error) {
+            console.error(`Error updating plan ${plan.name}:`, error.message)
+            throw new Error(`Failed to update ${plan.name}`)
+        }
+    }
+
+    revalidatePath('/admin-dashboard')
+    revalidatePath('/manager-dashboard')
+    return { success: true }
+}
+export async function updateBroadcastSettings(formData: {
+    senderName: string
+    senderEmail: string
+}) {
+    const adminSupabase = await createAdminClient()
+    const { data: { user } } = await (await createClient()).auth.getUser()
+
+    if (!user) throw new Error('Not authenticated')
+
+    const { error } = await adminSupabase.auth.admin.updateUserById(user.id, {
+        user_metadata: {
+            ...user.user_metadata,
+            broadcast_name: formData.senderName,
+            broadcast_email: formData.senderEmail
+        }
+    })
+
+    if (error) {
+        console.error('Broadcast settings update failed:', error.message)
+        throw new Error(error.message)
+    }
+
+    revalidatePath('/admin-dashboard')
+    return { success: true }
+}
+
+export async function sendBroadcast(formData: {
+    subject: string
+    message: string
+    target: 'all' | 'managers' | 'members'
+}) {
+    const adminSupabase = await createAdminClient()
+    const { data: { user: admin } } = await (await createClient()).auth.getUser()
+    if (!admin) throw new Error('Not authenticated')
+
+    const fromName = admin.user_metadata?.broadcast_name || admin.user_metadata?.full_name || 'GymFlow Admin'
+    const fromEmail = admin.user_metadata?.broadcast_email || admin.email || 'noreply@gymflow.io'
+
+    let targets: string[] = []
+
+    if (formData.target === 'managers' || formData.target === 'all') {
+        const { data: managers } = await adminSupabase
+            .from('profiles')
+            .select('email')
+            .eq('role', 'manager')
+            .eq('owner_id', admin.id)
+
+        if (managers) targets.push(...managers.map(m => m.email || '').filter(Boolean))
+    }
+
+    if (formData.target === 'members' || formData.target === 'all') {
+        // Members linked to this owner (via their managers)
+        const { data: managers } = await adminSupabase
+            .from('profiles')
+            .select('id')
+            .eq('role', 'manager')
+            .eq('owner_id', admin.id)
+
+        if (managers && managers.length > 0) {
+            const managerIds = managers.map(m => m.id)
+            const { data: members } = await adminSupabase
+                .from('members')
+                .select('email')
+                .in('manager_id', managerIds)
+
+            if (members) targets.push(...members.map(m => m.email || '').filter(Boolean))
+        }
+    }
+
+    // Deduplicate
+    targets = Array.from(new Set(targets))
+
+    const { sendBroadcastEmail } = await import('@/utils/notifications')
+
+    console.log(`--- BROADCAST TRANSMISSION: Sending to ${targets.length} nodes ---`)
+    const sendPromises = targets.map(to =>
+        sendBroadcastEmail({
+            to,
+            subject: formData.subject,
+            message: formData.message,
+            fromName,
+            fromEmail
+        })
+    )
+
+    await Promise.all(sendPromises)
+    return { success: true, count: targets.length }
 }

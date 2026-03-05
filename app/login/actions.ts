@@ -8,7 +8,7 @@ export async function login(formData: FormData) {
     const supabase = await createClient()
 
     const data = {
-        email: formData.get('email') as string,
+        email: (formData.get('email') as string).trim(),
         password: formData.get('password') as string,
     }
 
@@ -42,7 +42,7 @@ export async function login(formData: FormData) {
     const hasFinishedSetup = !!profile?.gym_name
 
     if (isManager) {
-        redirect('/dashboard')
+        redirect('/manager-dashboard')
     }
 
     // Treat as Owner/Admin
@@ -54,21 +54,53 @@ export async function login(formData: FormData) {
 }
 
 export async function signup(formData: FormData) {
-    const supabase = await createClient()
+    try {
+        const supabase = await createClient()
 
-    const data = {
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
+        const email = (formData.get('email') as string).trim()
+        const password = formData.get('password') as string
+
+        // 1. Attempt Signup
+        console.log('--- SIGNUP INITIATED ---', email)
+        const { error: signUpError, data: authData } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback?next=/signup/details`,
+            },
+        })
+
+        if (signUpError) {
+            console.error('Signup Error:', signUpError.message)
+            redirect(`/error?message=${encodeURIComponent(signUpError.message)}`)
+        }
+
+        console.log('Signup success. User created:', authData.user?.id)
+
+        // 2. Force Session Establishment
+        // If email confirmation is off, signUp might log us in (authData.session will exist).
+        // If it's ON, authData.session will be null.
+        if (!authData.session) {
+            console.log('No session after signup. Email confirmation likely required. Attempting verification check...')
+            const { error: signInError } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            })
+
+            if (signInError) {
+                console.log('Verification required. Redirecting to notice page.')
+                redirect(`/auth/verify-email?email=${encodeURIComponent(email)}`)
+            }
+        }
+
+        console.log('Session established. Redirecting to details onboarding.')
+        revalidatePath('/', 'layout')
+        redirect('/signup/details')
+    } catch (error: any) {
+        if (error.digest?.includes('NEXT_REDIRECT')) throw error
+        console.error('Fatal Signup Error:', error)
+        redirect(`/error?message=${encodeURIComponent(error.message || 'Fatal signup failure')}`)
     }
-
-    const { error, data: authData } = await supabase.auth.signUp(data)
-
-    if (error || !authData.user) {
-        redirect(`/error?message=${encodeURIComponent(error?.message || 'Signup failed')}`)
-    }
-
-    revalidatePath('/', 'layout')
-    redirect('/signup/details')
 }
 
 export async function updateProfile(formData: FormData) {
@@ -117,4 +149,22 @@ export async function updateProfile(formData: FormData) {
 
     revalidatePath('/', 'layout')
     redirect('/admin-dashboard')
+}
+
+export async function resendVerificationEmail(email: string) {
+    const supabase = await createClient()
+    const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+            emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback?next=/signup/details`,
+        },
+    })
+
+    if (error) {
+        console.error('Resend Error:', error.message)
+        throw new Error(error.message)
+    }
+
+    return { success: true }
 }
