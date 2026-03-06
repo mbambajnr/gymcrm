@@ -8,10 +8,10 @@ export default function SignupPage() {
         <div className="flex min-h-screen items-center justify-center bg-[#010101] px-6 selection:bg-white/10 selection:text-white">
             <Link
                 href="/"
-                className="absolute top-10 left-10 flex items-center gap-2 text-[11px] font-bold text-zinc-500 hover:text-white transition-colors uppercase tracking-widest"
+                className="absolute top-6 left-6 md:top-10 md:left-10 flex items-center gap-2 text-[10px] md:text-[11px] font-bold text-zinc-500 hover:text-white transition-colors uppercase tracking-widest z-[110]"
             >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Protocol
+                <ArrowLeft className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                Back to homepage
             </Link>
 
             <div className="w-full max-w-sm">

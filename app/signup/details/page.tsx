@@ -1,6 +1,6 @@
 import { updateProfile } from '../../login/actions'
 import Image from 'next/image'
-import { ShieldCheck } from 'lucide-react'
+import { ShieldCheck, ArrowLeft } from 'lucide-react'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
@@ -29,6 +29,13 @@ export default async function DetailsPage() {
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#010101] px-6 selection:bg-white/10 selection:text-white">
+            <Link
+                href="/"
+                className="absolute top-6 left-6 md:top-10 md:left-10 flex items-center gap-2 text-[10px] md:text-[11px] font-bold text-zinc-500 hover:text-white transition-colors uppercase tracking-widest z-[110]"
+            >
+                <ArrowLeft className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                Back to homepage
+            </Link>
             <div className="w-full max-w-sm">
                 <div className="text-center mb-12">
                     <Link href="/" className="mx-auto mb-8 flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-transform hover:scale-105 active:scale-95">

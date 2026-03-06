@@ -14,7 +14,7 @@ const galleryImages = [
 
 export default function ClientGallery() {
     return (
-        <div className="w-full max-w-[1400px] px-10 py-40">
+        <div className="w-full max-w-[1400px] px-6 md:px-10 py-24 md:py-40">
             <div className="flex flex-col md:flex-row items-end justify-between mb-20 gap-8">
                 <div className="max-w-xl">
                     <p className="text-[11px] font-black text-blue-500 uppercase tracking-[0.4em] mb-6">Social Proof Engine</p>
@@ -39,7 +39,7 @@ export default function ClientGallery() {
                                 src={img.src}
                                 alt={img.title}
                                 fill
-                                className="object-cover group-hover:scale-110 transition-transform duration-1000 ease-out grayscale group-hover:grayscale-0"
+                                className="object-cover group-hover:scale-110 transition-transform duration-1000 ease-out md:grayscale md:group-hover:grayscale-0"
                             />
                         ) : (
                             <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/10 to-transparent group-hover:scale-110 transition-transform duration-1000 ease-out" />

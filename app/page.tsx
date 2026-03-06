@@ -65,7 +65,7 @@ export default async function Home() {
           </div>
 
           <div className="flex items-center gap-4 md:gap-6">
-            <a href="/login" className="hidden sm:block text-[13px] font-bold text-zinc-500 hover:text-white transition-colors">SIGN IN</a>
+            <a href="/login" className="text-[12px] sm:text-[13px] font-bold text-zinc-500 hover:text-white transition-colors uppercase tracking-widest">SIGN IN</a>
             <a href="/signup" className="bg-white text-black px-5 md:px-7 py-2.5 rounded-full text-[12px] md:text-[13px] font-bold hover:bg-zinc-200 transition-all active:scale-95 shadow-2xl shadow-white/10 group flex items-center gap-2">
               GET STARTED
               <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -85,7 +85,7 @@ export default async function Home() {
               src="/hero.png"
               alt="Elite Gym Environment"
               fill
-              className="object-cover opacity-30 grayscale"
+              className="object-cover opacity-30 md:grayscale md:opacity-30"
               priority
             />
           </div>
@@ -233,7 +233,7 @@ export default async function Home() {
         <section className="w-full border-y border-white/[0.05] bg-white/[0.01] overflow-hidden py-10">
           <div className="flex flex-col items-center gap-6">
             <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.4em]">Integrated with elite infrastructure</span>
-            <div className="flex gap-20 animate-marquee items-center opacity-30 grayscale hover:opacity-100 transition-opacity duration-1000">
+            <div className="flex gap-20 animate-marquee items-center opacity-60 md:opacity-30 md:grayscale hover:opacity-100 transition-opacity duration-1000">
               {['VANTAGE GYM', 'ELITE ATHLETICS', 'POWER NODE', 'TITAN INFRA', 'VERTEX FITNESS', 'CORE SYSTEMS'].map((name) => (
                 <span key={name} className="text-xl font-black tracking-tighter text-white whitespace-nowrap">{name}</span>
               ))}
