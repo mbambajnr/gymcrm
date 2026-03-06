@@ -8,7 +8,7 @@ export default function LoginPage() {
         <div className="flex min-h-screen items-center justify-center bg-[#010101] px-6 selection:bg-white/10 selection:text-white">
             <div className="w-full max-w-sm">
                 <div className="text-center mb-12">
-                    <div className="mx-auto mb-8 flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                    <Link href="/" className="mx-auto mb-8 flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-transform hover:scale-105 active:scale-95">
                         <Image
                             src="/logo.png"
                             alt="Gym CRM Logo"
@@ -17,7 +17,7 @@ export default function LoginPage() {
                             className="h-full w-full object-contain"
                             priority
                         />
-                    </div>
+                    </Link>
                     <h2 className="text-3xl font-bold tracking-tight mb-2">GymFlow Entry</h2>
                     <p className="text-[14px] text-zinc-500 font-medium">Owners & Managers: Authenticate to access workspace</p>
                 </div>
@@ -68,11 +68,14 @@ export default function LoginPage() {
                     </div>
                 </form>
 
-                <div className="mt-12 pt-8 border-t border-white/[0.04]">
+                <div className="mt-12 pt-8 border-t border-white/[0.04] space-y-4">
                     <div className="flex items-center justify-center gap-2 text-zinc-700">
                         <ShieldCheck className="h-4 w-4" />
                         <span className="text-[11px] font-bold uppercase tracking-widest">End-to-End Encrypted</span>
                     </div>
+                    <p className="text-center text-[10px] font-bold text-zinc-800 uppercase tracking-[0.2em]">
+                        Developed in Ghana • Serving Africa
+                    </p>
                 </div>
             </div>
         </div>

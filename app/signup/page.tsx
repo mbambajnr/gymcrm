@@ -16,7 +16,7 @@ export default function SignupPage() {
 
             <div className="w-full max-w-sm">
                 <div className="text-center mb-12">
-                    <div className="mx-auto mb-8 flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                    <Link href="/" className="mx-auto mb-8 flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-transform hover:scale-105 active:scale-95">
                         <Image
                             src="/logo.png"
                             alt="Gym CRM Logo"
@@ -25,7 +25,7 @@ export default function SignupPage() {
                             className="h-full w-full object-contain"
                             priority
                         />
-                    </div>
+                    </Link>
                     <h2 className="text-3xl font-bold tracking-tight mb-2">Owner Registration</h2>
                     <p className="text-[14px] text-zinc-500 font-medium">Initialize your gym&apos;s digital infrastructure</p>
                 </div>

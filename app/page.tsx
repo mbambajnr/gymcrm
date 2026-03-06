@@ -96,7 +96,7 @@ export default async function Home() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-500 opacity-75"></span>
               <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-500"></span>
             </span>
-            <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-[0.2em] px-1">Infrastructure for Elite Fitness</span>
+            <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-[0.2em] px-1">Africa&apos;s Leading Fitness Infrastructure</span>
             <div className="h-3 w-px bg-white/10" />
             <span className="text-[11px] font-bold text-white uppercase tracking-[0.1em] flex items-center gap-1.5 px-1">
               v2.0 LIVE
@@ -392,7 +392,7 @@ export default async function Home() {
               <span className="text-xl font-bold tracking-tight">GymFlow</span>
             </div>
             <p className="text-[15px] text-zinc-500 font-medium leading-relaxed">
-              The infrastructure layer for modern fitness entrepreneurs. Designed in Nigeria for the global performance standard.
+              The infrastructure layer for modern fitness entrepreneurs. Developed in Ghana, aiming to be Africa&apos;s most advanced gym management and financial engine.
             </p>
             <div className="flex items-center gap-6 grayscale opacity-30 hover:grayscale-0 hover:opacity-100 transition-all">
               <div className="h-6 w-24 bg-zinc-800 rounded-lg" />
