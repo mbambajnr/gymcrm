@@ -55,7 +55,7 @@ export default async function Home() {
                 priority
               />
             </div>
-            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent">GymFlow</span>
+            <span className="hidden min-[380px]:inline text-xl font-bold tracking-tight bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-transparent">GymFlow</span>
           </div>
 
           <div className="hidden items-center gap-12 lg:flex">
@@ -64,10 +64,11 @@ export default async function Home() {
             ))}
           </div>
 
-          <div className="flex items-center gap-4 md:gap-6">
-            <a href="/login" className="text-[12px] sm:text-[13px] font-bold text-zinc-500 hover:text-white transition-colors uppercase tracking-widest">SIGN IN</a>
-            <a href="/signup" className="bg-white text-black px-5 md:px-7 py-2.5 rounded-full text-[12px] md:text-[13px] font-bold hover:bg-zinc-200 transition-all active:scale-95 shadow-2xl shadow-white/10 group flex items-center gap-2">
-              GET STARTED
+          <div className="flex items-center gap-3 md:gap-4">
+            <a href="/login" className="flex items-center text-[12px] md:text-[13px] font-bold text-zinc-500 hover:text-white transition-colors uppercase tracking-[0.1em] h-10">SIGN IN</a>
+            <a href="/signup" className="bg-white text-black px-4 md:px-7 h-10 rounded-full text-[12px] md:text-[13px] font-bold hover:bg-zinc-200 transition-all active:scale-95 shadow-2xl shadow-white/10 group flex items-center gap-2">
+              <span className="hidden sm:inline">GET STARTED</span>
+              <span className="sm:hidden text-[10px]">REGISTER</span>
               <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
             </a>
           </div>
